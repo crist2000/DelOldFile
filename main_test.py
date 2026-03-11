@@ -1,6 +1,6 @@
 #Make EXE:
 #pip install pyinstaller
-#pyinstaller main.py --onefile
+#pyinstaller --onefile -w main.py
 
 # region imports
 import os, time
@@ -9,12 +9,11 @@ import socket
 import sys
 # endregion
 
-#version = "1.0"
-version = "1.1" #added console % readiness. Improved speed.
-
 # region Declarations
 hostname = socket.gethostname()
+cls = lambda: os.system('cls')
 
+version = "1.0"
 DelFilePath = r"DeletedFiles.txt" # list of deleted files
 config_file = r"config.ini"
 log_file = f"{hostname}_log.txt"
@@ -45,6 +44,12 @@ def writeLogTrace(isTrue, msg):
 
 
 log_file_cnt.append(f"Program start....... {datetime.fromtimestamp(time.time())} ")
+print("HELLO")
+#print("Program started...", file=sys.stdout)
+#command = 'echo "Hello, World!" 1> output.txt'
+#command = 'echo "Hello, World!"'
+#os.system(command)
+
 # region reading config
 try:
     if not os.path.exists(config_file):
@@ -103,34 +108,11 @@ for folderPath in verified_repor_folders:
             fyear = datetime.fromtimestamp(t_mod).year
             fmonth = datetime.fromtimestamp(t_mod).month
 
-            if(curyear - fyear > 10):
-                filesToDelete.append(f)
-            elif(curyear - fyear == 10):
-                if (fmonth <= curmonth):
-                    filesToDelete.append(f)
-            else:
-                "Do nothing"
             cnt += 1
             pcnt = int(cnt / len(file_list) * 100)
             sys.stdout.write(f"\r")
             sys.stdout.write(f"{folderPath} {pcnt}%")
             sys.stdout.flush()
-
-        if len(filesToDelete) > 0:
-            writeLogInfo("Deleting old files...")
-
-            with open(DelFilePath, 'a') as file:
-
-                for f in filesToDelete:
-                    if ".CSV" in f.upper():
-                        time_now = datetime.fromtimestamp(time.time())
-                        file.write(f"{time_now} {f} {datetime.fromtimestamp(os.path.getmtime(f)).month} {datetime.fromtimestamp(os.path.getmtime(f)).year}\n")
-                        os.remove(f)
-
-            writeLogInfo(f"Deleted {len(filesToDelete)} files")
-        else:
-            writeLogInfo(f"No files to delete in {folderPath}")
-
     else:
         writeLogWarn(f"Folder not found: {folderPath}")
     print("")
