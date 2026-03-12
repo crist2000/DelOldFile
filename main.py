@@ -24,53 +24,50 @@ for folderPath in config.verified_report_folders:
     dir_list = os.listdir(folderPath)
     file_list = []
 
-    if os.path.exists(folderPath):
-        for elem in dir_list:
-            file_list.append(f"{folderPath}\\{elem}")
+    for elem in dir_list:
+        file_list.append(f"{folderPath}\\{elem}")
 
-        ttime = time.time()
-        curyear = datetime.fromtimestamp(ttime).year
-        curmonth = datetime.fromtimestamp(ttime).month
+    ttime = time.time()
+    curyear = datetime.fromtimestamp(ttime).year
+    curmonth = datetime.fromtimestamp(ttime).month
 
-        Logger.writeLogTrace(config.trace, f"Searching for old files in {folderPath}...")
-        filesToDelete = []
-        cnt = 0
+    Logger.writeLogTrace(config.trace, f"Searching for old files in {folderPath}...")
+    filesToDelete = []
+    cnt = 0
 
-        for f in file_list:
-            t_mod = os.path.getmtime(f)
-            fyear = datetime.fromtimestamp(t_mod).year
-            fmonth = datetime.fromtimestamp(t_mod).month
+    for f in file_list:
+        t_mod = os.path.getmtime(f)
+        fyear = datetime.fromtimestamp(t_mod).year
+        fmonth = datetime.fromtimestamp(t_mod).month
 
-            if(curyear - fyear > 10):
+        if(curyear - fyear > 10):
+            filesToDelete.append(f)
+        elif(curyear - fyear == 10):
+            if (fmonth <= curmonth):
                 filesToDelete.append(f)
-            elif(curyear - fyear == 10):
-                if (fmonth <= curmonth):
-                    filesToDelete.append(f)
-            else:
-                "Do nothing"
-            cnt += 1
-            pcnt = int(cnt / len(file_list) * 100)
-            sys.stdout.write(f"\r")
-            sys.stdout.write(f"{folderPath} {pcnt}%")
-            sys.stdout.flush()
-
-        if len(filesToDelete) > 0:
-            Logger.writeLogInfo("Deleting old files...")
-
-            with open(DelFilePath, 'a') as file:
-
-                for f in filesToDelete:
-                    if ".CSV" in f.upper():
-                        time_now = datetime.fromtimestamp(time.time())
-                        file.write(f"{time_now} {f} {datetime.fromtimestamp(os.path.getmtime(f)).month} {datetime.fromtimestamp(os.path.getmtime(f)).year}\n")
-                        os.remove(f)
-
-            Logger.writeLogInfo(f"Deleted {len(filesToDelete)} files")
         else:
-            Logger.writeLogInfo(f"No files to delete in {folderPath}")
+            "Do nothing"
 
+        cnt += 1
+        pcnt = int(cnt / len(file_list) * 100)
+        sys.stdout.write(f"\r")
+        sys.stdout.write(f"{folderPath} {pcnt}%")
+        sys.stdout.flush()
+
+    if len(filesToDelete) > 0:
+        Logger.writeLogInfo("Deleting old files...")
+
+        with open(DelFilePath, 'a') as file:
+
+            for f in filesToDelete:
+                if ".CSV" in f.upper():
+                    time_now = datetime.fromtimestamp(time.time())
+                    file.write(f"{time_now} {f} {datetime.fromtimestamp(os.path.getmtime(f)).month} {datetime.fromtimestamp(os.path.getmtime(f)).year}\n")
+                    os.remove(f)
+
+        Logger.writeLogInfo(f"Deleted {len(filesToDelete)} files")
     else:
-        Logger.writeLogWarn(f"Folder not found: {folderPath}")
+        Logger.writeLogInfo(f"No files to delete in {folderPath}")
     print("")
 # endregion
 
