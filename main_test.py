@@ -19,7 +19,6 @@ from Logger import *
 log_file_cnt.append(f"Program start....... {datetime.fromtimestamp(time.time())} ")
 print("Program started...", file=sys.stdout)
 #command = 'echo "Hello, World!" 1> output.txt'
-#command = 'echo "Hello, World!"'
 #os.system(command)
 
 # region reading config

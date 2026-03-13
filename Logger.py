@@ -29,3 +29,7 @@ class Logger:
     def writeLogTrace(isTrue, msg):
         if isTrue:
             log_file_cnt.append(f"{datetime.fromtimestamp(time.time())} TRACE: {msg}")
+            
+    @staticmethod
+    def clearLog():
+        log_file_cnt.clear()
